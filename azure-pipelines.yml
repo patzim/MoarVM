@@ -29,7 +29,7 @@ stages:
            RAKUDO_OPTIONS: ''
            NQP_OPTIONS: '--backends=moar'
            MOAR_OPTIONS: ''
-         Win_MVM_relocatable:
+         Win_MVM_reloc:
            IMAGE_NAME: 'windows-2019'
            RELOCATABLE: 'yes'
            RAKUDO_OPTIONS: '--relocatable'
@@ -62,38 +62,52 @@ stages:
 
          MVM_gcc_njit:
            IMAGE_NAME: 'ubuntu-18.04'
+           RAKUDO_OPTIONS: ''
            NQP_OPTIONS: '--backends=moar'
            MOAR_OPTIONS: '--no-jit --cc=gcc'
          MVM_gcc:
            IMAGE_NAME: 'ubuntu-18.04'
+           RAKUDO_OPTIONS: ''
            NQP_OPTIONS: '--backends=moar'
            MOAR_OPTIONS: '--cc=gcc'
          MVM_clang_njit:
            IMAGE_NAME: 'ubuntu-18.04'
+           RAKUDO_OPTIONS: ''
            NQP_OPTIONS: '--backends=moar'
            MOAR_OPTIONS: '--no-jit --cc=clang'
          MVM_clang:
            IMAGE_NAME: 'ubuntu-18.04'
+           RAKUDO_OPTIONS: ''
            NQP_OPTIONS: '--backends=moar'
            MOAR_OPTIONS: '--cc=clang'
          MVM_gcc_njit_libffi:
            IMAGE_NAME: 'ubuntu-18.04'
+           RAKUDO_OPTIONS: ''
            NQP_OPTIONS: '--backends=moar'
            MOAR_OPTIONS: '--has-libffi --no-jit --cc=gcc'
          MVM_gcc_libffi:
            IMAGE_NAME: 'ubuntu-18.04'
+           RAKUDO_OPTIONS: ''
            NQP_OPTIONS: '--backends=moar'
            MOAR_OPTIONS: '--has-libffi --cc=gcc'
          MVM_clang_njit_libffi:
            IMAGE_NAME: 'ubuntu-18.04'
+           RAKUDO_OPTIONS: ''
            NQP_OPTIONS: '--backends=moar'
            MOAR_OPTIONS: '--has-libffi --no-jit --cc=clang'
          MVM_clang_libffi:
            IMAGE_NAME: 'ubuntu-18.04'
+           RAKUDO_OPTIONS: ''
            NQP_OPTIONS: '--backends=moar'
            MOAR_OPTIONS: '--has-libffi --cc=clang'
+         MVM_gcc_mingw:
+           IMAGE_NAME: 'windows-2019'
+           RAKUDO_OPTIONS: ''
+           NQP_OPTIONS: '--backends=moar'
+           MOAR_OPTIONS: '--os=mingw32'
          MVM_coverage:
            IMAGE_NAME: 'ubuntu-18.04'
+           RAKUDO_OPTIONS: ''
            NQP_OPTIONS: '--backends=moar'
            MOAR_OPTIONS: '--compiler=clang --coverage --optimize=0 --debug=3 --cc=clang'
            COVERAGE: 1
@@ -132,15 +146,13 @@ stages:
 
         # Build MoarVM
         - script: |
-            perl Configure.pl --prefix=../install $(MOAR_OPTIONS)
-            make install
+            perl Configure.pl --prefix=../install $(MOAR_OPTIONS) --make-install
           workingDirectory: '$(Pipeline.Workspace)/MoarVM'
           condition: ne( variables['Agent.OS'], 'Windows_NT' )
           displayName: Build MoarVM
         - pwsh: |
             ${{ variables.PWSH_DEV }}
-            perl Configure.pl --prefix=..\install $(MOAR_OPTIONS)
-            nmake install
+            perl Configure.pl --prefix=..\install $(MOAR_OPTIONS) --make-install
           failOnStderr: false
           workingDirectory: '$(Pipeline.Workspace)/MoarVM'
           condition: eq( variables['Agent.OS'], 'Windows_NT' )
@@ -148,15 +160,13 @@ stages:
 
         # Build NQP
         - script: |
-            perl Configure.pl --prefix=../install $(NQP_OPTIONS)
-            make install
+            perl Configure.pl --prefix=../install $(NQP_OPTIONS) --make-install
           workingDirectory: '$(Pipeline.Workspace)/nqp'
           condition: ne( variables['Agent.OS'], 'Windows_NT' )
           displayName: Build NQP
         - pwsh: |
             ${{ variables.PWSH_DEV }}
-            perl Configure.pl --prefix=..\install $(NQP_OPTIONS)
-            nmake install
+            perl Configure.pl --prefix=..\install $(NQP_OPTIONS) --make-install
           failOnStderr: false
           workingDirectory: '$(Pipeline.Workspace)/nqp'
           condition: eq( variables['Agent.OS'], 'Windows_NT' )
@@ -164,15 +174,13 @@ stages:
 
         # Build Rakudo
         - script: |
-            perl Configure.pl --prefix=../install $(RAKUDO_OPTIONS)
-            make install
+            perl Configure.pl --prefix=../install $(RAKUDO_OPTIONS) --make-install
           workingDirectory: '$(Pipeline.Workspace)/rakudo'
           condition: ne( variables['Agent.OS'], 'Windows_NT' )
           displayName: Build Rakudo
         - pwsh: |
             ${{ variables.PWSH_DEV }}
-            perl Configure.pl --prefix=..\install $(RAKUDO_OPTIONS)
-            nmake install
+            perl Configure.pl --prefix=..\install $(RAKUDO_OPTIONS) --make-install
           failOnStderr: false
           workingDirectory: '$(Pipeline.Workspace)/rakudo'
           condition: eq( variables['Agent.OS'], 'Windows_NT' )
